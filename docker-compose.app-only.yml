@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: jirayusgoodlife/ai-pdf-to-md:latest
+    container_name: ai-pdf-to-md-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./outputs:/app/outputs
+      - ./uploads:/app/uploads
+    environment:
+      # Connect to local Ollama running on Host OS (or vLLM/AirLLM)
+      - LLM_BASE_URL=http://host.docker.internal:11434/v1
+      - LLM_MODEL=${LLM_MODEL:-llama3.1}
+      - LLM_API_KEY=ollama
+      - LLM_ENABLED=true
+      - DEFAULT_ENGINE=docling
+      - MAX_FILE_SIZE_MB=100
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
