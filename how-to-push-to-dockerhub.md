@@ -23,3 +23,13 @@ docker buildx build --platform linux/amd64,linux/arm64 \
   -t jirayusgoodlife/ai-pdf-to-md:latest \
   --push .
 ```
+---
+
+## 🛠️ Building & Pushing Docker Image
+
+```bash
+docker login -u jirayusgoodlife
+docker build -t jirayusgoodlife/ai-pdf-to-md:latest .
+docker push jirayusgoodlife/ai-pdf-to-md:latest
+```
+

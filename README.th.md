@@ -143,16 +143,6 @@ AI-PDF-to-MD/
 
 ---
 
-## 🛠️ วิธีการ Build & Push ขึ้น Docker Hub
-
-```bash
-docker login -u jirayusgoodlife
-docker build -t jirayusgoodlife/ai-pdf-to-md:latest .
-docker push jirayusgoodlife/ai-pdf-to-md:latest
-```
-
----
-
 ## 🙏 Credits
 
 - [Docling](https://github.com/docling-project/docling) — IBM's document converter
