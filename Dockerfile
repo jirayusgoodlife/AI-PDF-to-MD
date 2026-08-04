@@ -19,10 +19,11 @@ RUN apt-get update && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install Python dependencies with security upgrades
+# Copy requirements and install Python dependencies
 COPY backend/requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip "setuptools>=79.0.1" wheel && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir --no-deps --upgrade "pillow>=11.1.0" "jaraco.context>=6.0.0"
 
 # Copy application code
 COPY backend/app ./app

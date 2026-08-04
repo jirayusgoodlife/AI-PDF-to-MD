@@ -1,8 +1,9 @@
-# Security & Compatibility Pins
-pillow>=10.4.0,<11.0.0
+# Security Pins
 jaraco.context>=6.0.0
 urllib3>=2.3.0
 cryptography>=44.0.0
+soupsieve>=2.5
+beautifulsoup4>=4.12.3
 
 # Core Application Dependencies
 fastapi[standard]>=0.115.0
@@ -11,8 +12,6 @@ python-multipart>=0.0.9
 python-dotenv>=1.0.0
 aiofiles>=24.1.0
 openai>=1.40.0
-soupsieve>=2.5
-beautifulsoup4>=4.12.3
 
 # Document Conversion Engines
 docling>=2.31.0
