@@ -4,5 +4,7 @@ python-multipart>=0.0.9
 python-dotenv>=1.0.0
 aiofiles>=24.1.0
 openai>=1.40.0
+soupsieve>=2.5
+beautifulsoup4>=4.12.3
 docling>=2.31.0
 marker-pdf>=1.6.0
