@@ -1,7 +1,7 @@
-# Security Pins
-jaraco.context>=6.0.0
-urllib3>=2.3.0
-cryptography>=44.0.0
+# Security & Compatibility Pins
+jaraco.context>=6.1.2
+urllib3>=2.7.0
+cryptography>=50.0.0
 soupsieve>=2.5
 beautifulsoup4>=4.12.3
 
@@ -15,4 +15,3 @@ openai>=1.40.0
 
 # Document Conversion Engines
 docling>=2.31.0
-marker-pdf>=1.6.0

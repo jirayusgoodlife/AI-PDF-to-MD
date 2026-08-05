@@ -20,10 +20,14 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
+# Step 1: Pre-install Pillow 12.3.0 & secure dependencies to prevent older vulnerable versions
+# Step 2: Install core requirements
+# Step 3: Install marker-pdf with --no-deps so it accepts Pillow 12.3.0 without downloading Pillow 10.4.0
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip "setuptools>=79.0.1" wheel && \
+    pip install --no-cache-dir "pillow>=12.3.0" "jaraco.context>=6.1.2" "urllib3>=2.7.0" "cryptography>=50.0.0" && \
     pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir --no-deps --upgrade "pillow>=11.1.0" "jaraco.context>=6.0.0"
+    pip install --no-cache-dir --no-deps marker-pdf
 
 # Copy application code
 COPY backend/app ./app
