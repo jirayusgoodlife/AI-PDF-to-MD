@@ -45,11 +45,16 @@ async def lifespan(app: FastAPI):
     yield
     logger.info("Server shutting down.")
 
+from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
+
 app = FastAPI(
-    title="if-doc2md",
-    description="Convert PDF, Word, PowerPoint, Excel to Markdown for RAG with Local LLM Thai Correction",
-    version="1.0.0",
+    title="if-doc2md API",
+    description="OpenAPI / Swagger documentation for if-doc2md — Document to Markdown Conversion & RAG Cleansing Engine",
+    version="1.0.2",
     lifespan=lifespan,
+    docs_url=None,  # Custom local offline handler below
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
 )
 
 # CORS
@@ -65,6 +70,32 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(convert.router)
 app.include_router(llm.router)
+
+# Mount local swagger assets if available
+swagger_dir = FRONTEND_DIR / "swagger"
+if swagger_dir.is_dir():
+    app.mount("/swagger", StaticFiles(directory=str(swagger_dir)), name="swagger_static")
+
+# Direct routes for Swagger & OpenAPI documentation (supports /docs, /swagger, /swagger-ui, /api/docs)
+@app.api_route("/docs", methods=["GET", "HEAD"], include_in_schema=False)
+@app.api_route("/swagger", methods=["GET", "HEAD"], include_in_schema=False)
+@app.api_route("/swagger-ui", methods=["GET", "HEAD"], include_in_schema=False)
+@app.api_route("/api/docs", methods=["GET", "HEAD"], include_in_schema=False)
+async def custom_swagger_ui():
+    # Use local assets if available, fallback to CDN
+    js_url = "/swagger/swagger-ui-bundle.js" if swagger_dir.is_dir() else "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"
+    css_url = "/swagger/swagger-ui.css" if swagger_dir.is_dir() else "https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css"
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="if-doc2md API - Swagger UI",
+        swagger_js_url=js_url,
+        swagger_css_url=css_url,
+        swagger_ui_parameters={"defaultModelsExpandDepth": 1, "deepLinking": True}
+    )
+
+@app.api_route("/api/redoc", methods=["GET", "HEAD"], include_in_schema=False)
+async def redoc_redirect():
+    return RedirectResponse(url="/redoc")
 
 # Mount frontend static files
 if FRONTEND_DIR.exists():

@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     MAX_FILE_SIZE_MB: int = Field(default=100)
     OUTPUT_DIR: str = Field(default="./outputs")
     UPLOAD_DIR: str = Field(default="./uploads")
+    SYSTEM_PROMPT: str = Field(default="")
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

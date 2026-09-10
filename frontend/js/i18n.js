@@ -7,6 +7,7 @@ const translations = {
         status_connected: "เชื่อมต่อกับ LLM แล้ว",
         status_checking: "กำลังตรวจสอบ...",
         settings_btn_title: "ตั้งค่า",
+        api_docs_title: "เอกสาร API (Swagger)",
         
         // Upload Section
         drop_title: "ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์",
@@ -58,12 +59,16 @@ const translations = {
         llm_model_label: "Model Name",
         llm_key_label: "API Key (ถ้ามี)",
         llm_temp_label: "Temperature",
+        llm_prompt_label: "System Prompt (Cleansing & แก้ไขข้อความ RAG)",
+        btn_reset_prompt: "คืนค่าเริ่มต้น",
+        llm_prompt_hint: "ปรับแต่งคำสั่งลบ Header/Footer, เลขหน้า, จุดไข่ปลา (...), และการเว้นวรรคผิดปกติเพื่อเพิ่มคุณภาพ RAG",
         btn_test_llm: "ทดสอบการเชื่อมต่อ",
         btn_testing_llm: "กำลังทดสอบ...",
         btn_save_settings: "บันทึก",
         
         // Toasts
         toast_saved: "บันทึกการตั้งค่าแล้ว",
+        toast_prompt_reset: "คืนค่า System Prompt เริ่มต้นแล้ว",
         toast_conn_success: "เชื่อมต่อสำเร็จ",
         toast_conn_warning: "เชื่อมต่อสำเร็จ (ตรวจสอบโมเดล)",
         toast_conn_failed: "ไม่สามารถเชื่อมต่อได้ กรุณาตรวจสอบ URL",
@@ -82,6 +87,7 @@ const translations = {
         status_connected: "Connected to LLM",
         status_checking: "Checking...",
         settings_btn_title: "Settings",
+        api_docs_title: "API Documentation (Swagger)",
         
         // Upload Section
         drop_title: "Drag & drop files here, or click to browse",
@@ -133,12 +139,16 @@ const translations = {
         llm_model_label: "Model Name",
         llm_key_label: "API Key (Optional)",
         llm_temp_label: "Temperature",
+        llm_prompt_label: "System Prompt (RAG Cleansing & Enhancement)",
+        btn_reset_prompt: "Reset to Default",
+        llm_prompt_hint: "Configure instructions to clean headers/footers, page numbers, repeated dots (...), and abnormal spacing for RAG",
         btn_test_llm: "Test Connection",
         btn_testing_llm: "Testing...",
         btn_save_settings: "Save",
         
         // Toasts
         toast_saved: "Settings saved successfully",
+        toast_prompt_reset: "System Prompt restored to default",
         toast_conn_success: "Connected successfully",
         toast_conn_warning: "Connected (check model name)",
         toast_conn_failed: "Connection failed, please verify URL",
@@ -221,6 +231,12 @@ class I18nManager {
         const settingsBtn = document.getElementById('btn-settings');
         if (settingsBtn) {
             settingsBtn.setAttribute('aria-label', dict.settings_btn_title);
+            settingsBtn.setAttribute('title', dict.settings_btn_title);
+        }
+        const apiDocsBtn = document.getElementById('btn-api-docs');
+        if (apiDocsBtn) {
+            apiDocsBtn.setAttribute('aria-label', dict.api_docs_title);
+            apiDocsBtn.setAttribute('title', dict.api_docs_title);
         }
 
         // Update toggle badges

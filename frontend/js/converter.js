@@ -48,15 +48,19 @@ class ConversionManager {
                 const uploadMsg = window.t ? `${window.t('log_uploading')} ${file.name}...` : `กำลังอัปโหลด ${file.name}...`;
                 this.setStep('upload', 10, uploadMsg);
 
+                const llmSettings = this.app.settings.getSettings();
+
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('engine', engine);
                 formData.append('llm_enabled', useLlm.toString());
                 formData.append('rag_mode', useRag.toString());
+                if (useLlm && llmSettings.systemPrompt) {
+                    formData.append('system_prompt', llmSettings.systemPrompt);
+                }
 
                 // If LLM is enabled and user has custom settings, sync to backend
                 if (useLlm && localStorage.getItem('llm_settings_custom')) {
-                    const llmSettings = this.app.settings.getSettings();
                     try {
                         await fetch('/api/llm/settings', {
                             method: 'POST',
@@ -66,7 +70,8 @@ class ConversionManager {
                                 model: llmSettings.model,
                                 api_key: llmSettings.key || '',
                                 enabled: true,
-                                temperature: llmSettings.temperature || 0.3
+                                temperature: llmSettings.temperature || 0.3,
+                                system_prompt: llmSettings.systemPrompt || ''
                             })
                         });
                     } catch (e) {

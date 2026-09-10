@@ -29,7 +29,8 @@ async def convert_document(
     engine: str = Form(settings.DEFAULT_ENGINE),
     llm_enabled: bool = Form(False),
     rag_mode: bool = Form(False),
-    chunk_size: int = Form(4000)
+    chunk_size: int = Form(4000),
+    system_prompt: Optional[str] = Form(None)
 ):
     task_id = str(uuid.uuid4())
     
@@ -80,7 +81,7 @@ async def convert_document(
             llm_client = LLMClient(settings.LLM_BASE_URL, settings.LLM_API_KEY, settings.LLM_MODEL)
             
         processor = PostProcessor(llm_client)
-        final_markdown = await processor.process(markdown_content, llm_enabled=llm_enabled)
+        final_markdown = await processor.process(markdown_content, llm_enabled=llm_enabled, custom_prompt=system_prompt)
         
         # Save markdown
         out_md_path = os.path.join(settings.OUTPUT_DIR, f"{task_id}.md")

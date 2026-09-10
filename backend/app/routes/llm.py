@@ -17,6 +17,8 @@ async def check_status():
         error=error
     )
 
+from ..llm.thai_corrector import THAI_CORRECTION_SYSTEM_PROMPT
+
 @router.get("/api/llm/settings", response_model=LLMSettings)
 async def get_settings():
     return LLMSettings(
@@ -25,7 +27,7 @@ async def get_settings():
         api_key=settings.LLM_API_KEY,
         enabled=settings.LLM_ENABLED,
         temperature=0.3,
-        system_prompt=""
+        system_prompt=settings.SYSTEM_PROMPT or THAI_CORRECTION_SYSTEM_PROMPT
     )
 
 @router.post("/api/llm/settings")
@@ -34,6 +36,8 @@ async def update_settings(new_settings: LLMSettings):
     settings.LLM_MODEL = new_settings.model
     settings.LLM_API_KEY = new_settings.api_key
     settings.LLM_ENABLED = new_settings.enabled
+    if new_settings.system_prompt is not None:
+        settings.SYSTEM_PROMPT = new_settings.system_prompt
     return {"message": "Settings updated"}
 
 class TestRequest(BaseModel):
@@ -45,10 +49,10 @@ async def test_llm(req: TestRequest):
         raise HTTPException(status_code=400, detail="LLM is not enabled")
         
     client = LLMClient(settings.LLM_BASE_URL, settings.LLM_API_KEY, settings.LLM_MODEL)
-    from ..llm.thai_corrector import THAI_CORRECTION_SYSTEM_PROMPT
+    prompt = settings.SYSTEM_PROMPT or THAI_CORRECTION_SYSTEM_PROMPT
     
     try:
-        result = await client.complete(THAI_CORRECTION_SYSTEM_PROMPT, req.text)
+        result = await client.complete(prompt, req.text)
         return {"original": req.text, "corrected": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -8,12 +8,12 @@ docker login -u jirayusgoodlife
 
 # 2. Build Image พร้อม Tag ของ Docker Hub
 docker build -t jirayusgoodlife/ai-pdf-to-md:latest .
-# หรือระบุ Tag version (เช่น v1.0.0)
-docker build -t jirayusgoodlife/ai-pdf-to-md:v1.0.0 .
+# หรือระบุ Tag version (เช่น v1.0.2)
+docker build -t jirayusgoodlife/ai-pdf-to-md:v1.0.2 .
 
 # 3. Push Image ขึ้น Docker Hub
 docker push jirayusgoodlife/ai-pdf-to-md:latest
-docker push jirayusgoodlife/ai-pdf-to-md:v1.0.0
+docker push jirayusgoodlife/ai-pdf-to-md:v1.0.2
 ```
 
 *(ตัวเลือกเสริม) Build แบบ Multi-platform (amd64 / arm64)*:

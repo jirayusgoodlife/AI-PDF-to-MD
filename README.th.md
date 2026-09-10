@@ -1,9 +1,9 @@
-# AI-PDF-to-MD 📄→📝 (ภาษาไทย)
+# if-doc2md 📄→📝 (คู่มือภาษาไทย)
 
-[🇬🇧 English Version](README.en.md) | [🇹🇭 ภาษาไทย](README.th.md)
+[🇹🇭 ภาษาไทย](README.th.md) | [🇬🇧 English Version](README.en.md)
 
-แปลงเอกสาร PDF, Word, PowerPoint, Excel เป็น Markdown สำหรับ RAG  
-พร้อมใช้ **Local LLM** (Ollama, vLLM, airllm) แก้ไขข้อความภาษาไทยที่ OCR ผิดพลาด (เช่น สระ วรรณยุกต์ ผิดตำแหน่ง)
+ระบบแปลงเอกสาร **PDF, Word (.docx), PowerPoint (.pptx), Excel (.xlsx)** ให้เป็น **Markdown** คุณภาพสูงสำหรับระบบ **RAG (Retrieval-Augmented Generation)**  
+พร้อมระบบ **Data Cleansing** และแก้ไขข้อความภาษาไทยด้วย **Local LLM** (Ollama, vLLM, LM Studio) เพื่อตัด Header, Footer, เลขหน้า, จุดไข่ปลา และเว้นวรรคผิดปกติออกโดยอัตโนมัติ
 
 [![GitHub Repo](https://img.shields.io/badge/GitHub-jirayusgoodlife%2FAI--PDF--to--MD-blue?logo=github)](https://github.com/jirayusgoodlife/AI-PDF-to-MD)
 [![Docker Hub](https://img.shields.io/badge/Docker%20Hub-jirayusgoodlife%2Fai--pdf--to--md-blue?logo=docker)](https://hub.docker.com/r/jirayusgoodlife/ai-pdf-to-md)
@@ -11,140 +11,166 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-> 🔗 **Open Source Repository**: [https://github.com/jirayusgoodlife/AI-PDF-to-MD](https://github.com/jirayusgoodlife/AI-PDF-to-MD)  
-> 🐳 **Docker Hub Image**: [https://hub.docker.com/r/jirayusgoodlife/ai-pdf-to-md](https://hub.docker.com/r/jirayusgoodlife/ai-pdf-to-md)
+---
+
+## 📸 ภาพตัวอย่างหน้าจอการใช้งาน (Screenshots)
+
+| 1. หน้าจอหลักและการอัปโหลดไฟล์ | 2. การตั้งค่าเอนจินและเปิดใช้ LLM/RAG |
+| :---: | :---: |
+| ![หน้าจอหลัก](docs/screenshots/ui_main.png) | ![ตัวเลือกการแปลง](docs/screenshots/ui_options.png) |
+| **3. การติดตามขั้นตอนประมวลผลแบบเรียลไทม์** | **4. หน้าต่างผลลัพธ์ Markdown & RAG Chunks** |
+| ![ขั้นตอนการแปลง](docs/screenshots/ui_progress.png) | ![ผลลัพธ์](docs/screenshots/ui_result.png) |
+
+### 5. การตั้งค่า LLM Server และ System Prompt สำหรับ Data Cleansing
+สามารถปรับแต่งคำสั่ง Prompt เพื่อควบคุมการตัดข้อมูลขยะสำหรับ RAG และปรับแก้ไขสระ/วรรณยุกต์ภาษาไทยได้อย่างอิสระ
+![การตั้งค่าและ System Prompt](docs/screenshots/ui_settings.png)
+
+### 6. เอกสาร API แบบโต้ตอบ (Interactive OpenAPI / Swagger UI)
+เปิดดูและทดลองยิง API ทุกเส้นทางได้ง่ายๆ ผ่านปุ่มรูปเอกสาร API ในหน้าเว็บ หรือเข้าผ่าน URL:
+- Swagger UI: `http://localhost:8000/docs` (หรือ `/swagger`, `/api/docs`)
+- ReDoc UI: `http://localhost:8000/redoc`
+- OpenAPI JSON Spec: `http://localhost:8000/openapi.json`
+![Swagger UI](docs/screenshots/ui_swagger.png)
 
 ---
 
-## ✨ คุณสมบัติ
+## ✨ จุดเด่นและความสามารถ (Features)
 
-- 📄 **รองรับหลายรูปแบบ**: PDF, DOCX, PPTX, XLSX
-- 🔧 **2 Conversion Engines**:
-  - **Docling** (IBM) — รองรับทุกประเภทไฟล์, มี OCR ในตัว
-  - **Marker** (Datalab) — เชี่ยวชาญ PDF โดยเฉพาะ, ให้ความแม่นยำสูง
-- 🤖 **Local LLM Integration**: แก้ไขข้อความภาษาไทยที่ OCR ผิดพลาด (เช่น สระ วรรณยุกต์ เพี้ยนหรือวางผิดตำแหน่ง)
-- 📦 **RAG-Ready Output**: แบ่ง Markdown เป็น Chunks พร้อม Metadata (Heading Path, Source File, Index)
-- 🎨 **UI สวยงาม**: Dark glassmorphic design พร้อมระบบ Drag & Drop
-- 🐳 **Docker Ready**: พร้อมใช้งานด้วย Docker Compose เพียงคำสั่งเดียว
+1. **🎨 หน้าจอใช้งานทันสมัย (Dark Slate & Electric Blue)**
+   - ดีไซน์ Glassmorphic ใช้งานง่าย สบายตา
+   - ปุ่มสลับภาษาบนแถบนำทาง (🇹🇭 ไทย / 🇬🇧 อังกฤษ)
+   - ป้ายสถานะการเชื่อมต่อกับ LLM แบบสด ("เชื่อมต่อกับ LLM แล้ว" / "ยังไม่ได้เชื่อมต่อกับ LLM")
+
+2. **📄 รองรับไฟล์เอกสารหลากหลาย**
+   - PDF, Microsoft Word (`.docx`), PowerPoint (`.pptx`), Excel (`.xlsx`) สูงสุด 100MB
+
+3. **🔧 เอนจินการแปลงเอกสาร 2 รูปแบบ**
+   - **Docling (IBM)**: รองรับไฟล์เอกสารทุกตระกูล มี OCR ดึงตาราง ตารางซ้อน และโครงสร้างหัวข้อได้ละเอียด
+   - **Marker (Datalab)**: ออกแบบเฉพาะทางเพื่อสกัดเนื้อหาจาก PDF ด้วยความเร็วและความแม่นยำสูง
+
+4. **🧹 ระบบ Data Cleansing & แก้ไขภาษาไทยด้วย LLM**
+   - **ตัด Header / Footer / เลขหน้า**: เช่น *"หน้า 1 จาก 10"*, *"Page 2 of 15"*, ชื่อเอกสารหรือรหัสลับที่ขึ้นซ้ำๆ ทุกหน้า ซึ่งเป็น Noise รบกวน Vector Embedding ของ RAG
+   - **ลบจุดไข่ปลาและเส้นประ**: เช่น `....................`, `-------------`, `_ _ _ _ _ _` ที่ติดมาจากสารบัญหรือแบบฟอร์ม
+   - **แก้ปัญหา Spacing ผิดปกติ**: ตัวอักษรที่กระจายจากการจัดหน้าแบบ Justify เช่น `ก า ร ท ด ส อ บ` → `การทดสอบ` และช่องว่างหลายเคาะซ้ำซ้อน
+   - **แก้สระและวรรณยุกต์ลอย/จม**: จัดระเบียบวรรณยุกต์และคำผิดที่เกิดจาก Font Encoding หรือ OCR
+
+5. **⚙️ ปรับแต่ง System Prompt ได้อิสระใน Setting**
+   - แก้ไขคำสั่ง Prompt ในหน้าต่างตั้งค่า พร้อมบันทึกลงในระบบทันที
+   - ปุ่ม **"คืนค่าเริ่มต้น" (Reset to default)** เพื่อย้อนกลับไปใช้ Prompt มาตรฐานที่มีชุดกฎ RAG Cleansing ครบครัน
+
+6. **📦 Semantic RAG Chunking**
+   - แบ่งชิ้นส่วนข้อความตามโครงสร้างหัวข้อ (H1, H2, H3...)
+   - บันทึก Metadata ละเอียด: `source`, `heading_path`, `chunk_index`, `total_chunks`
+   - ส่งออกเป็นไฟล์ `.json` สำหรับนำไปทำ Embeddings ใน Vector Database ได้ทันที
 
 ---
 
-## 🚀 วิธีใช้งาน
+## 🚀 วิธีการติดตั้งและเริ่มใช้งาน
 
-### 1. 🐳 การใช้งานด้วย Docker / Docker Hub (แนะนำ)
+### 1. 🐳 ใช้งานผ่าน Docker / Docker Hub (แนะนำที่สุด)
 
-#### ดึง Image จาก Docker Hub ไปใช้งานโดยตรง
+#### ดึง Image ตรงจาก Docker Hub
 ```bash
-# Pull image จาก Docker Hub
 docker pull jirayusgoodlife/ai-pdf-to-md:latest
 
-# รัน Container
 docker run -d -p 8000:8000 \
   -v ./outputs:/app/outputs \
   -v ./uploads:/app/uploads \
-  --name ai-pdf-to-md \
+  --name if-doc2md \
   jirayusgoodlife/ai-pdf-to-md:latest
 ```
 
-#### รันด้วย Docker Compose
-
-**แบบที่ 1: All-in-One (รวมแอป + Local LLM Ollama + Auto Pull Model)**
+#### ใช้งานด้วย Docker Compose (All-in-One: App + Local LLM Ollama)
 ```bash
+# รันทั้งระบบ
 docker compose up -d
+
+# ดูบันทึกการทำงาน
+docker compose logs -f
 ```
 
-**แบบที่ 2: รันเฉพาะตัวแอป (เชื่อมต่อ Local LLM ภายนอก)**
-```bash
-docker compose -f docker-compose.app-only.yml up -d
-```
-
-เปิดเบราว์เซอร์ไปที่: **http://localhost:8000**
+เปิดเว็บเบราว์เซอร์ไปที่: **http://localhost:8000**
 
 ---
 
-### 2. 🛠️ แบบ Manual Install
+### 2. 🛠️ ติดตั้งและรันโดยตรง (Manual / Local Dev)
 
 ```bash
 # 1. Clone repository
 git clone https://github.com/jirayusgoodlife/AI-PDF-to-MD.git
 cd AI-PDF-to-MD
 
-# 2. ติดตั้ง dependencies
+# 2. ติดตั้ง Dependencies ใน backend
 cd backend
 pip install -r requirements.txt
 
-# 3. ตั้งค่า (optional)
+# 3. สร้างไฟล์ตั้งค่า
 cp ../.env.example .env
 
-# 4. รัน server
+# 4. รันเซิร์ฟเวอร์
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ---
 
-## 🤖 การตั้งค่า Local LLM
+## 🤖 การเชื่อมต่อ Local LLM
 
-### Ollama
+ระบบรองรับ LLM Server ทุกค่ายที่เข้ากันได้กับมาตรฐาน **OpenAI Compatible API** เช่น **Ollama**, **vLLM**, **LM Studio**, **LocalAI**
+
+### ตัวอย่างการเชื่อมต่อ Ollama:
 ```bash
-# ติดตั้ง Ollama
-curl -fsSL https://ollama.com/install.sh | sh
-
-# ดึงโมเดล (แนะนำ llama3.1)
+# 1. ติดตั้ง Ollama และดึงโมเดลภาษาไทย/สากล (แนะนำ llama3.1 หรือ gemma2)
 ollama pull llama3.1
+
+# 2. ตรวจสอบให้ Ollama เปิดบริการที่ port 11434
 ```
 
-### การตั้งค่าบน Web UI
+### การตั้งค่าผ่าน Web UI:
 1. คลิกไอคอนฟันเฟือง ⚙️ ที่มุมขวาบน
-2. กรอก API URL (เช่น `http://localhost:11434/v1`)
-3. กรอกชื่อ Model (เช่น `llama3.1`)
-4. คลิก "ทดสอบการเชื่อมต่อ" ➔ "บันทึก"
+2. กรอก **API URL**: `http://localhost:11434/v1` (หรือ IP ของ LLM Server)
+3. กรอก **Model Name**: เช่น `llama3.1`, `google/gemma-4-31B-it-qat-w4a16-ct`
+4. ปรับแต่งคำสั่ง **System Prompt** หากต้องการกฎ Cleansing เพิ่มเติม
+5. คลิก **"ทดสอบการเชื่อมต่อ"** ➔ ระบบจะแสดงสัญญาณไฟสีเขียว **"เชื่อมต่อกับ LLM แล้ว"**
+6. คลิก **"บันทึก"**
 
 ---
 
-## 📁 โครงสร้างโปรเจค
+## 📂 โครงสร้างโปรเจกต์ (Project Structure)
 
-```
+```text
 AI-PDF-to-MD/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py              # FastAPI entry point
-│   │   ├── config.py            # Configuration & Settings
-│   │   ├── models.py            # Pydantic schemas
-│   │   ├── converters/          # Conversion engines (Docling, Marker)
-│   │   ├── llm/                 # LLM client & Thai text corrector
-│   │   ├── chunking/            # RAG chunker
-│   │   └── routes/              # API routes
+│   │   ├── main.py              # FastAPI Application & Routes entry
+│   │   ├── config.py            # Environment & System Settings
+│   │   ├── models.py            # Pydantic Schemas (API, LLM, RAG)
+│   │   ├── converters/          # Docling & Marker Converter Adapters
+│   │   ├── chunking/            # Heading-based Semantic RAG Chunker
+│   │   ├── llm/
+│   │   │   ├── client.py        # OpenAI-compatible Async Client
+│   │   │   ├── thai_corrector.py# Thai Correction & Cleansing Prompt Logic
+│   │   │   └── post_processor.py# Regex Cleaners & Pre/Post pipeline
+│   │   └── routes/              # /api/convert, /api/llm, etc.
 │   └── requirements.txt
 ├── frontend/
-│   ├── index.html               # SPA UI
-│   ├── css/style.css            # Dark glassmorphic styles
-│   └── js/                      # App logic & modules
-├── docker-compose.yml           # Full stack compose
-├── docker-compose.app-only.yml # App-only compose
-├── Dockerfile
-└── README.md
+│   ├── index.html               # Web UI Single Page Application
+│   ├── css/
+│   │   └── style.css            # Slate Gray & Electric Blue Glassmorphic theme
+│   └── js/
+│       ├── app.js               # Application Orchestrator
+│       ├── i18n.js              # Thai / English Localization Engine
+│       ├── settings.js          # Settings Modal & Prompt Manager
+│       ├── uploader.js          # Drag & Drop File Upload Handler
+│       ├── converter.js         # API Bridge & Step Progress Controller
+│       └── preview.js           # Markdown Preview & Chunks Renderer
+├── docs/
+│   └── screenshots/             # ภาพตัวอย่างหน้าจอระบบ
+├── docker-compose.yml           # All-in-One Deployment
+└── Dockerfile
 ```
 
 ---
 
-## 🔌 API Endpoints
+## 📄 ใบอนุญาต (License)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/health` | Health check & supported formats |
-| `POST` | `/api/convert` | Upload & convert document |
-| `GET` | `/api/convert/{id}/status` | Check conversion status |
-| `GET` | `/api/convert/{id}/download` | Download markdown file |
-| `GET` | `/api/convert/{id}/download/rag` | Download RAG JSON |
-| `GET` | `/api/history` | List recent conversions |
-| `GET` | `/api/llm/status` | Check LLM connection |
-| `POST` | `/api/llm/settings` | Update LLM settings |
-| `POST` | `/api/llm/test` | Test LLM with sample text |
-
----
-
-## 🙏 Credits
-
-- [Docling](https://github.com/docling-project/docling) — IBM's document converter
-- [Marker](https://github.com/datalab-to/marker) — PDF to markdown
-- [pdf2md_llm](https://github.com/leoneversberg/pdf2md_llm) — LLM-enhanced PDF conversion
+โปรเจกต์นี้เผยแพร่ภายใต้สัญญาอนุญาต [MIT License](LICENSE) สามารถนำไปใช้งาน พัฒนาต่อยอด และประยุกต์ใช้ในองค์กรได้อย่างอิสระ

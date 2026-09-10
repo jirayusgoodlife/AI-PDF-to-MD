@@ -86,4 +86,20 @@ class App {
 // Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new App();
+
+    // Query params for automated testing / preview
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('modal') === 'settings') {
+        window.app.settings.openModal();
+    }
+    if (params.get('section') === 'progress') {
+        window.app.showSection('progress-section');
+        document.getElementById('step-upload').className = 'step done';
+        document.getElementById('step-convert').className = 'step active';
+        document.getElementById('step-llm').className = 'step';
+        document.getElementById('step-rag').className = 'step';
+        document.getElementById('step-done').className = 'step';
+        document.getElementById('progress-bar').style.width = '45%';
+        document.getElementById('progress-status-text').textContent = 'กำลังแปลงเอกสารด้วย Docling...';
+    }
 });
