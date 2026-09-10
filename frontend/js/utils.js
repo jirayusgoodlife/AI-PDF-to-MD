@@ -65,11 +65,14 @@ function showToast(message, type = 'info') {
 }
 
 function copyToClipboard(text) {
+    const successMsg = window.t ? window.t('toast_copied') : 'คัดลอกไปยังคลิปบอร์ดแล้ว';
+    const errorMsg = window.t ? window.t('toast_copy_failed') : 'ไม่สามารถคัดลอกได้';
+
     if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(() => {
-            showToast('คัดลอกไปยังคลิปบอร์ดแล้ว', 'success');
+            showToast(successMsg, 'success');
         }).catch(() => {
-            showToast('ไม่สามารถคัดลอกได้', 'error');
+            showToast(errorMsg, 'error');
         });
     } else {
         const textArea = document.createElement("textarea");
@@ -78,9 +81,9 @@ function copyToClipboard(text) {
         textArea.select();
         try {
             document.execCommand('copy');
-            showToast('คัดลอกไปยังคลิปบอร์ดแล้ว', 'success');
+            showToast(successMsg, 'success');
         } catch (err) {
-            showToast('ไม่สามารถคัดลอกได้', 'error');
+            showToast(errorMsg, 'error');
         }
         document.body.removeChild(textArea);
     }

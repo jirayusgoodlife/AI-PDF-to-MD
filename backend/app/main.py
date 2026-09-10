@@ -37,7 +37,7 @@ async def lifespan(app: FastAPI):
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
     os.makedirs(settings.OUTPUT_DIR, exist_ok=True)
     logger.info("=" * 60)
-    logger.info("🚀 AI-PDF-to-MD Server Starting")
+    logger.info("🚀 if-doc2md Server Starting")
     logger.info(f"   Frontend: {FRONTEND_DIR} ({'✅ Found' if FRONTEND_DIR.exists() else '❌ Not found'})")
     logger.info(f"   LLM: {'✅ Enabled' if settings.LLM_ENABLED else '⏸️ Disabled'} ({settings.LLM_BASE_URL})")
     logger.info(f"   Engine: {settings.DEFAULT_ENGINE}")
@@ -46,8 +46,8 @@ async def lifespan(app: FastAPI):
     logger.info("Server shutting down.")
 
 app = FastAPI(
-    title="AI PDF to MD Converter",
-    description="แปลงเอกสาร PDF, Word, PowerPoint, Excel เป็น Markdown สำหรับ RAG พร้อม Local LLM แก้ไขภาษาไทย",
+    title="if-doc2md",
+    description="Convert PDF, Word, PowerPoint, Excel to Markdown for RAG with Local LLM Thai Correction",
     version="1.0.0",
     lifespan=lifespan,
 )

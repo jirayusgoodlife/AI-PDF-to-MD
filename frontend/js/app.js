@@ -7,12 +7,18 @@ class App {
             result: document.getElementById('result-section')
         };
 
+        // Initialize i18n
+        if (window.i18n) {
+            window.i18n.init();
+        }
+
         this.uploader = new FileUploader();
         this.settings = new SettingsManager();
         this.converter = new ConversionManager(this);
         this.preview = new PreviewManager();
 
         this.initEvents();
+        this.initToggleBadges();
     }
 
     initEvents() {
@@ -30,10 +36,38 @@ class App {
         });
     }
 
+    initToggleBadges() {
+        const updateBadge = (toggleId, badgeId) => {
+            const toggle = document.getElementById(toggleId);
+            const badge = document.getElementById(badgeId);
+            if (toggle && badge) {
+                const isOn = toggle.checked;
+                badge.textContent = isOn ? window.t('badge_on', 'เปิด') : window.t('badge_off', 'ปิด');
+                badge.className = `toggle-status-badge ${isOn ? 'badge-on' : 'badge-off'}`;
+            }
+        };
+
+        const toggleLlm = document.getElementById('toggle-llm');
+        const toggleRag = document.getElementById('toggle-rag');
+
+        if (toggleLlm) {
+            toggleLlm.addEventListener('change', () => updateBadge('toggle-llm', 'badge-llm'));
+            updateBadge('toggle-llm', 'badge-llm');
+        }
+        if (toggleRag) {
+            toggleRag.addEventListener('change', () => updateBadge('toggle-rag', 'badge-rag'));
+            updateBadge('toggle-rag', 'badge-rag');
+        }
+
+        document.addEventListener('lang-changed', () => {
+            updateBadge('toggle-llm', 'badge-llm');
+            updateBadge('toggle-rag', 'badge-rag');
+        });
+    }
+
     showSection(sectionId) {
         Object.values(this.sections).forEach(sec => sec.classList.add('hidden'));
         
-        // Because the keys are upload, options, progress, result
         const key = sectionId.replace('-section', '');
         if (this.sections[key]) {
             this.sections[key].classList.remove('hidden');

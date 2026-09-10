@@ -17,7 +17,9 @@ class SettingsManager {
 
         this.settings = this.loadSettings();
         this.initEvents();
-        this.updateStatusUI();
+        
+        // Auto-check and sync with backend on startup
+        this.syncWithBackend();
     }
 
     defaultSettings() {
@@ -35,16 +37,77 @@ class SettingsManager {
         return saved ? { ...this.defaultSettings(), ...JSON.parse(saved) } : this.defaultSettings();
     }
 
-    saveSettings() {
+    async syncWithBackend() {
+        // Set checking state
+        this.statusIndicator.classList.remove('connected');
+        this.statusIndicator.classList.add('checking');
+        if (window.t) {
+            this.statusText.textContent = window.t('status_checking');
+        }
+
+        try {
+            // 1. Fetch current backend LLM settings
+            const settingsRes = await fetch('/api/llm/settings');
+            if (settingsRes.ok) {
+                const backendSettings = await settingsRes.json();
+                // If user doesn't have custom localStorage override, use backend defaults
+                if (!localStorage.getItem('llm_settings_custom') && backendSettings.base_url) {
+                    this.settings.url = backendSettings.base_url;
+                    this.settings.model = backendSettings.model || this.settings.model;
+                    this.settings.key = backendSettings.api_key || '';
+                }
+            }
+
+            // 2. Fetch backend LLM connection status
+            const statusRes = await fetch('/api/llm/status');
+            if (statusRes.ok) {
+                const statusData = await statusRes.json();
+                this.settings.connected = Boolean(statusData.connected);
+                if (statusData.model) {
+                    this.settings.backendModel = statusData.model;
+                }
+            } else {
+                this.settings.connected = false;
+            }
+        } catch (err) {
+            console.warn('Failed to auto-sync LLM status from backend:', err);
+            this.settings.connected = false;
+        } finally {
+            this.statusIndicator.classList.remove('checking');
+            this.updateStatusUI();
+            localStorage.setItem('llm_settings', JSON.stringify(this.settings));
+        }
+    }
+
+    async saveSettings() {
         this.settings.url = this.inputUrl.value.trim();
         this.settings.model = this.inputModel.value.trim();
         this.settings.key = this.inputKey.value.trim();
         this.settings.temperature = parseFloat(this.inputTemp.value);
         
         localStorage.setItem('llm_settings', JSON.stringify(this.settings));
-        this.updateStatusUI();
-        showToast('บันทึกการตั้งค่าแล้ว', 'success');
+        localStorage.setItem('llm_settings_custom', 'true');
+
+        // Sync settings to backend
+        try {
+            await fetch('/api/llm/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    base_url: this.settings.url,
+                    model: this.settings.model,
+                    api_key: this.settings.key,
+                    enabled: true,
+                    temperature: this.settings.temperature
+                })
+            });
+        } catch (e) {
+            console.warn('Could not sync to backend:', e);
+        }
+
+        showToast(window.t ? window.t('toast_saved') : 'บันทึกการตั้งค่าแล้ว', 'success');
         this.closeModal();
+        this.syncWithBackend();
     }
 
     initEvents() {
@@ -67,6 +130,10 @@ class SettingsManager {
                 this.closeModal();
             }
         });
+
+        document.addEventListener('lang-changed', () => {
+            this.updateStatusUI();
+        });
     }
 
     openModal() {
@@ -85,30 +152,43 @@ class SettingsManager {
 
     async testConnection() {
         this.btnTest.disabled = true;
-        this.btnTest.textContent = 'กำลังทดสอบ...';
+        this.btnTest.textContent = window.t ? window.t('btn_testing_llm') : 'กำลังทดสอบ...';
         
-        const url = this.inputUrl.value.trim() + '/models';
+        const url = this.inputUrl.value.trim();
+        const model = this.inputModel.value.trim();
         const key = this.inputKey.value.trim();
 
         try {
-            const headers = { 'Content-Type': 'application/json' };
-            if (key) headers['Authorization'] = `Bearer ${key}`;
+            // First update backend with the test settings
+            await fetch('/api/llm/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    base_url: url,
+                    model: model,
+                    api_key: key,
+                    enabled: true
+                })
+            });
+
+            // Now check status via backend (avoids browser CORS issues)
+            const res = await fetch('/api/llm/status');
+            const data = await res.json();
             
-            const res = await fetch(url, { headers, method: 'GET' }).catch(() => null);
-            
-            if (res && res.ok) {
-                showToast('เชื่อมต่อสำเร็จ', 'success');
+            if (data && data.connected) {
+                showToast(window.t ? window.t('toast_conn_success') : 'เชื่อมต่อสำเร็จ', 'success');
                 this.settings.connected = true;
             } else {
-                showToast('เชื่อมต่อสำเร็จ (แต่อาจต้องตรวจสอบ Model)', 'warning');
-                this.settings.connected = true;
+                const errMsg = data && data.error ? `: ${data.error}` : '';
+                showToast((window.t ? window.t('toast_conn_failed') : 'ไม่สามารถเชื่อมต่อได้') + errMsg, 'error');
+                this.settings.connected = false;
             }
         } catch (err) {
-            showToast('ไม่สามารถเชื่อมต่อได้ กรุณาตรวจสอบ URL', 'error');
+            showToast(window.t ? window.t('toast_conn_failed') : 'ไม่สามารถเชื่อมต่อได้ กรุณาตรวจสอบ URL', 'error');
             this.settings.connected = false;
         } finally {
             this.btnTest.disabled = false;
-            this.btnTest.textContent = 'ทดสอบการเชื่อมต่อ';
+            this.btnTest.textContent = window.t ? window.t('btn_test_llm') : 'ทดสอบการเชื่อมต่อ';
             this.updateStatusUI();
             localStorage.setItem('llm_settings', JSON.stringify(this.settings));
         }
@@ -117,10 +197,13 @@ class SettingsManager {
     updateStatusUI() {
         if (this.settings.connected) {
             this.statusIndicator.classList.add('connected');
-            this.statusText.textContent = 'พร้อมใช้งาน';
+            this.statusIndicator.classList.remove('checking');
+            const connectedText = window.t ? window.t('status_connected') : 'เชื่อมต่อกับ LLM แล้ว';
+            this.statusText.textContent = connectedText;
         } else {
             this.statusIndicator.classList.remove('connected');
-            this.statusText.textContent = 'ไม่ได้เชื่อมต่อ';
+            const disconnectedText = window.t ? window.t('status_disconnected') : 'ยังไม่ได้เชื่อมต่อกับ LLM';
+            this.statusText.textContent = disconnectedText;
         }
     }
 

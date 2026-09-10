@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Doc → MD | แปลงเอกสารเป็น Markdown สำหรับ RAG</title>
+    <title>if-doc2md | แปลงเอกสารเป็น Markdown สำหรับ RAG</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -17,15 +17,25 @@
                 <line x1="16" y1="17" x2="8" y2="17"></line>
                 <polyline points="10 9 9 9 8 9"></polyline>
             </svg>
-            <h1 class="gradient-text">AI Doc → MD</h1>
+            <h1 class="gradient-text">if-doc2md</h1>
         </div>
-        <div class="tagline">แปลงเอกสารเป็น Markdown สำหรับ RAG</div>
+        <div class="tagline" data-i18n="tagline">แปลงเอกสารเป็น Markdown สำหรับ RAG</div>
         <div class="header-actions">
+            <!-- Language Switcher -->
+            <div class="lang-switcher">
+                <button id="lang-th" class="lang-btn active" type="button">TH</button>
+                <span class="lang-divider">|</span>
+                <button id="lang-en" class="lang-btn" type="button">EN</button>
+            </div>
+
+            <!-- LLM Status Indicator -->
             <div id="llm-status" class="status-indicator">
                 <span class="status-dot"></span>
-                <span class="status-text">ไม่ได้เชื่อมต่อ</span>
+                <span class="status-text" data-i18n="status_disconnected">ยังไม่ได้เชื่อมต่อกับ LLM</span>
             </div>
-            <button id="btn-settings" class="btn-icon" aria-label="ตั้งค่า">
+
+            <!-- Settings Button -->
+            <button id="btn-settings" class="btn-icon" aria-label="ตั้งค่า" data-i18n-title="settings_btn_title">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="3"></circle>
                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -44,37 +54,37 @@
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
-                    <h2>ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์</h2>
-                    <p>รองรับ PDF, Word, PowerPoint, Excel (สูงสุด 100MB)</p>
+                    <h2 data-i18n="drop_title">ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์</h2>
+                    <p data-i18n="drop_desc">รองรับ PDF, Word, PowerPoint, Excel (สูงสุด 100MB)</p>
                 </div>
             </div>
             <div id="file-list-container" class="file-list-container hidden">
-                <h3>ไฟล์ที่เลือก</h3>
+                <h3 data-i18n="file_list_title">ไฟล์ที่เลือก</h3>
                 <ul id="file-list" class="file-list"></ul>
                 <div class="file-actions">
-                    <button id="btn-add-more" class="btn btn-secondary">เพิ่มไฟล์</button>
+                    <button id="btn-add-more" class="btn btn-secondary" data-i18n="add_more_files">+ เพิ่มไฟล์</button>
                 </div>
             </div>
         </section>
 
         <section id="options-section" class="card hidden fade-in">
-            <h3>การตั้งค่าการแปลง</h3>
+            <h3 data-i18n="options_title">การตั้งค่าการแปลง</h3>
             <div class="options-grid">
                 <div class="option-group">
-                    <label>เอนจินการแปลง</label>
+                    <label data-i18n="engine_label">เอนจินการแปลง</label>
                     <div class="radio-cards">
                         <label class="radio-card">
                             <input type="radio" name="engine" value="docling" checked>
                             <div class="card-content">
-                                <h4>Docling (แนะนำ)</h4>
-                                <p>รองรับทุกไฟล์ แม่นยำสูง</p>
+                                <h4 data-i18n="docling_title">Docling (แนะนำ)</h4>
+                                <p data-i18n="docling_desc">รองรับทุกไฟล์ แม่นยำสูง</p>
                             </div>
                         </label>
                         <label class="radio-card">
                             <input type="radio" name="engine" value="marker">
                             <div class="card-content">
-                                <h4>Marker</h4>
-                                <p>สำหรับ PDF เท่านั้น</p>
+                                <h4 data-i18n="marker_title">Marker</h4>
+                                <p data-i18n="marker_desc">สำหรับ PDF เท่านั้น</p>
                             </div>
                         </label>
                     </div>
@@ -83,34 +93,36 @@
                     <label class="toggle-switch">
                         <input type="checkbox" id="toggle-llm">
                         <span class="slider"></span>
-                        <span class="label-text">ใช้ LLM แก้ไขภาษาไทย</span>
+                        <span class="label-text" data-i18n="toggle_llm_label">ใช้ LLM แก้ไขภาษาไทย</span>
+                        <span class="toggle-status-badge badge-off" id="badge-llm" data-i18n="badge_off">ปิด</span>
                     </label>
                     <label class="toggle-switch">
                         <input type="checkbox" id="toggle-rag">
                         <span class="slider"></span>
-                        <span class="label-text">แบ่ง Chunks สำหรับ RAG</span>
+                        <span class="label-text" data-i18n="toggle_rag_label">แบ่ง Chunks สำหรับ RAG</span>
+                        <span class="toggle-status-badge badge-off" id="badge-rag" data-i18n="badge_off">ปิด</span>
                     </label>
                 </div>
             </div>
             <button id="btn-start-convert" class="btn btn-primary btn-large w-100">
-                <span>เริ่มแปลงเอกสาร</span>
+                <span data-i18n="btn_convert">เริ่มแปลงเอกสาร</span>
             </button>
         </section>
 
         <section id="progress-section" class="card hidden fade-in">
-            <h3>กำลังดำเนินการ</h3>
+            <h3 data-i18n="progress_title">กำลังดำเนินการ</h3>
             <div class="progress-container">
                 <div class="progress-steps">
-                    <div class="step active" id="step-upload">อัปโหลด</div>
-                    <div class="step" id="step-convert">แปลงเอกสาร</div>
-                    <div class="step" id="step-llm">แก้ไขข้อความ</div>
-                    <div class="step" id="step-rag">แบ่ง Chunks</div>
-                    <div class="step" id="step-done">เสร็จสิ้น</div>
+                    <div class="step active" id="step-upload" data-i18n="step_upload">อัปโหลด</div>
+                    <div class="step" id="step-convert" data-i18n="step_convert">แปลงเอกสาร</div>
+                    <div class="step" id="step-llm" data-i18n="step_llm">แก้ไขข้อความ</div>
+                    <div class="step" id="step-rag" data-i18n="step_rag">แบ่ง Chunks</div>
+                    <div class="step" id="step-done" data-i18n="step_done">เสร็จสิ้น</div>
                 </div>
                 <div class="progress-bar-wrap">
                     <div id="progress-bar" class="progress-bar"></div>
                 </div>
-                <p id="progress-status-text" class="status-text-live">กำลังเตรียมการ...</p>
+                <p id="progress-status-text" class="status-text-live" data-i18n="preparing">กำลังเตรียมการ...</p>
                 <div class="log-output-container">
                     <pre id="log-output"></pre>
                 </div>
@@ -119,17 +131,17 @@
 
         <section id="result-section" class="card hidden fade-in">
             <div class="result-header">
-                <h3>ผลลัพธ์</h3>
+                <h3 data-i18n="result_title">ผลลัพธ์การแปลง</h3>
                 <div class="download-actions">
-                    <button id="btn-copy-md" class="btn btn-secondary btn-sm">คัดลอก</button>
-                    <button id="btn-dl-md" class="btn btn-primary btn-sm">ดาวน์โหลด Markdown</button>
-                    <button id="btn-dl-rag" class="btn btn-secondary btn-sm hidden" id="btn-dl-rag-btn">ดาวน์โหลด RAG JSON</button>
+                    <button id="btn-copy-md" class="btn btn-secondary btn-sm" data-i18n="btn_copy_md">คัดลอก Markdown</button>
+                    <button id="btn-dl-md" class="btn btn-primary btn-sm" data-i18n="btn_download_md">ดาวน์โหลด .md</button>
+                    <button id="btn-dl-rag" class="btn btn-secondary btn-sm hidden" data-i18n="btn_download_rag">ดาวน์โหลด Chunks JSON</button>
                 </div>
             </div>
             <div class="tabs">
-                <button class="tab-btn active" data-target="tab-preview">Preview</button>
-                <button class="tab-btn" data-target="tab-raw">Raw Markdown</button>
-                <button class="tab-btn hidden" data-target="tab-rag" id="tab-rag-btn">RAG Chunks</button>
+                <button class="tab-btn active" data-target="tab-preview" data-i18n="tab_preview">ตัวอย่าง Markdown</button>
+                <button class="tab-btn" data-target="tab-raw" data-i18n="tab_raw">Markdown ดิบ</button>
+                <button class="tab-btn hidden" data-target="tab-rag" id="tab-rag-btn" data-i18n="tab_rag">RAG Chunks</button>
             </div>
             <div class="tab-content">
                 <div id="tab-preview" class="tab-pane active markdown-body"></div>
@@ -141,7 +153,7 @@
                 </div>
             </div>
             <div class="result-footer">
-                <button id="btn-new-convert" class="btn btn-secondary w-100">แปลงเอกสารใหม่</button>
+                <button id="btn-new-convert" class="btn btn-secondary w-100" data-i18n="btn_new_convert">แปลงไฟล์ใหม่</button>
             </div>
         </section>
     </main>
@@ -149,36 +161,37 @@
     <div id="settings-modal" class="modal-overlay hidden">
         <div class="modal-card">
             <div class="modal-header">
-                <h2>การตั้งค่า LLM Server</h2>
+                <h2 data-i18n="modal_title">การตั้งค่า LLM Server</h2>
                 <button class="btn-close" id="btn-close-settings">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="llm-url">API URL (OpenAI Compatible)</label>
+                    <label for="llm-url" data-i18n="llm_url_label">API URL (OpenAI Compatible)</label>
                     <input type="text" id="llm-url" placeholder="http://localhost:11434/v1">
                 </div>
                 <div class="form-group">
-                    <label for="llm-model">Model Name</label>
+                    <label for="llm-model" data-i18n="llm_model_label">Model Name</label>
                     <input type="text" id="llm-model" placeholder="llama3">
                 </div>
                 <div class="form-group">
-                    <label for="llm-key">API Key (Optional)</label>
+                    <label for="llm-key" data-i18n="llm_key_label">API Key (ถ้ามี)</label>
                     <input type="password" id="llm-key" placeholder="sk-...">
                 </div>
                 <div class="form-group">
-                    <label>Temperature (<span id="temp-val">0.3</span>)</label>
+                    <label><span data-i18n="llm_temp_label">Temperature</span> (<span id="temp-val">0.3</span>)</label>
                     <input type="range" id="llm-temp" min="0" max="1" step="0.1" value="0.3">
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="btn-test-llm" class="btn btn-secondary">ทดสอบการเชื่อมต่อ</button>
-                <button id="btn-save-settings" class="btn btn-primary">บันทึก</button>
+                <button id="btn-test-llm" class="btn btn-secondary" data-i18n="btn_test_llm">ทดสอบการเชื่อมต่อ</button>
+                <button id="btn-save-settings" class="btn btn-primary" data-i18n="btn_save_settings">บันทึก</button>
             </div>
         </div>
     </div>
 
     <div id="toast-container" class="toast-container"></div>
 
+    <script src="js/i18n.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/uploader.js"></script>
     <script src="js/settings.js"></script>

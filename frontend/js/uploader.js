@@ -48,13 +48,15 @@ class FileUploader {
         
         newFiles.forEach(file => {
             if (file.size > this.maxSize) {
-                showToast(`ไฟล์ ${file.name} มีขนาดใหญ่เกินไป (สูงสุด 100MB)`, 'error');
+                const msg = window.t ? `${file.name} ${window.t('toast_file_too_large')}` : `ไฟล์ ${file.name} มีขนาดใหญ่เกินไป (สูงสุด 100MB)`;
+                showToast(msg, 'error');
                 return;
             }
             
             const ext = '.' + getFileExtension(file.name);
             if (!this.allowedTypes.includes(ext)) {
-                showToast(`ไม่รองรับประเภทไฟล์ ${ext}`, 'error');
+                const msg = window.t ? `${window.t('toast_file_not_supported')} ${ext}` : `ไม่รองรับประเภทไฟล์ ${ext}`;
+                showToast(msg, 'error');
                 return;
             }
             

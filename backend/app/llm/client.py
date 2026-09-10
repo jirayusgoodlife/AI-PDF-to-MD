@@ -6,7 +6,12 @@ logger = logging.getLogger(__name__)
 
 class LLMClient:
     def __init__(self, base_url: str, api_key: str, model: str):
-        self.client = AsyncOpenAI(base_url=base_url, api_key=api_key)
+        # Provide fallback dummy api_key if blank, and 10s timeout to avoid hanging indefinitely
+        self.client = AsyncOpenAI(
+            base_url=base_url,
+            api_key=api_key or "dummy-key",
+            timeout=10.0
+        )
         self.model = model
 
     async def complete(self, system_prompt: str, user_content: str, temperature: float = 0.3) -> str:

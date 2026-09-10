@@ -25,7 +25,7 @@ class ConversionManager {
     async startConversion() {
         const files = this.app.uploader.getFiles();
         if (files.length === 0) {
-            showToast('กรุณาเลือกไฟล์ก่อน', 'warning');
+            showToast(window.t ? window.t('toast_select_file') : 'กรุณาเลือกไฟล์ก่อน', 'warning');
             return;
         }
 
@@ -41,10 +41,12 @@ class ConversionManager {
             // Process each file
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                this.log(`📄 กำลังประมวลผลไฟล์: ${file.name} (${i + 1}/${files.length})`);
+                const prefix = window.t ? window.t('log_processing') : '📄 กำลังประมวลผลไฟล์';
+                this.log(`${prefix}: ${file.name} (${i + 1}/${files.length})`);
 
                 // 1. Upload step
-                this.setStep('upload', 10, `กำลังอัปโหลด ${file.name}...`);
+                const uploadMsg = window.t ? `${window.t('log_uploading')} ${file.name}...` : `กำลังอัปโหลด ${file.name}...`;
+                this.setStep('upload', 10, uploadMsg);
 
                 const formData = new FormData();
                 formData.append('file', file);
@@ -52,29 +54,29 @@ class ConversionManager {
                 formData.append('llm_enabled', useLlm.toString());
                 formData.append('rag_mode', useRag.toString());
 
-                // If LLM is enabled, update backend settings first
-                if (useLlm) {
+                // If LLM is enabled and user has custom settings, sync to backend
+                if (useLlm && localStorage.getItem('llm_settings_custom')) {
                     const llmSettings = this.app.settings.getSettings();
                     try {
                         await fetch('/api/llm/settings', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                base_url: llmSettings.url || 'http://localhost:11434/v1',
-                                model: llmSettings.model || 'llama3.1',
-                                api_key: llmSettings.apiKey || 'ollama',
+                                base_url: llmSettings.url,
+                                model: llmSettings.model,
+                                api_key: llmSettings.key || '',
                                 enabled: true,
-                                temperature: llmSettings.temperature || 0.3,
-                                system_prompt: ''
+                                temperature: llmSettings.temperature || 0.3
                             })
                         });
                     } catch (e) {
-                        this.log('⚠️ ไม่สามารถอัพเดตการตั้งค่า LLM ได้');
+                        this.log('⚠️ Could not sync LLM settings to server');
                     }
                 }
 
                 // 2. Convert step
-                this.setStep('convert', 30, `กำลังแปลงไฟล์ด้วย ${engine}...`);
+                const convertMsg = window.t ? `${window.t('log_converting')} ${engine}...` : `กำลังแปลงไฟล์ด้วย ${engine}...`;
+                this.setStep('convert', 30, convertMsg);
 
                 let response;
                 try {
@@ -83,7 +85,7 @@ class ConversionManager {
                         body: formData
                     });
                 } catch (fetchError) {
-                    throw new Error(`ไม่สามารถเชื่อมต่อ server ได้: ${fetchError.message}`);
+                    throw new Error(`Connection error: ${fetchError.message}`);
                 }
 
                 if (!response.ok) {
@@ -93,26 +95,29 @@ class ConversionManager {
 
                 const result = await response.json();
                 this.currentTaskId = result.task_id;
-                this.log(`✅ แปลงไฟล์สำเร็จด้วย ${result.engine}`);
+                this.log(`✅ Converted with ${result.engine}`);
 
                 // 3. LLM step
                 if (useLlm) {
-                    this.setStep('llm', 70, 'กำลังใช้ LLM ปรับปรุงข้อความภาษาไทย...');
-                    this.log('🤖 LLM กำลังแก้ไขสระ วรรณยุกต์ที่ผิดตำแหน่ง...');
+                    const llmMsg = window.t ? window.t('log_correcting') : 'กำลังแก้ไขข้อความด้วย LLM...';
+                    this.setStep('llm', 70, llmMsg);
+                    this.log(`🤖 ${llmMsg}`);
                 } else {
                     this.steps.llm.classList.add('done');
                 }
 
                 // 4. RAG step
                 if (useRag) {
-                    this.setStep('rag', 90, 'กำลังแบ่ง Chunks สำหรับ RAG...');
-                    this.log('📦 แบ่ง Markdown เป็น chunks พร้อม metadata');
+                    const ragMsg = window.t ? window.t('log_chunking') : 'กำลังแบ่ง Chunks สำหรับ RAG...';
+                    this.setStep('rag', 90, ragMsg);
+                    this.log(`📦 ${ragMsg}`);
                 } else {
                     this.steps.rag.classList.add('done');
                 }
 
                 // 5. Fetch results
-                this.setStep('done', 100, 'เสร็จสิ้น!');
+                const doneMsg = window.t ? window.t('log_done') : 'เสร็จสิ้น!';
+                this.setStep('done', 100, doneMsg);
 
                 // Download the markdown content
                 let markdown = '';
@@ -122,7 +127,7 @@ class ConversionManager {
                         markdown = await mdResponse.text();
                     }
                 } catch (e) {
-                    this.log('⚠️ ไม่สามารถโหลดผลลัพธ์ Markdown ได้');
+                    this.log('⚠️ Could not load output markdown');
                 }
 
                 // Download RAG chunks if available
@@ -135,11 +140,11 @@ class ConversionManager {
                             ragChunks = ragData.chunks || [];
                         }
                     } catch (e) {
-                        this.log('⚠️ ไม่สามารถโหลด RAG chunks ได้');
+                        this.log('⚠️ Could not load RAG chunks');
                     }
                 }
 
-                this.log('🎉 ทำงานเสร็จสมบูรณ์');
+                this.log('🎉 ' + (window.t ? window.t('toast_convert_success') : 'สำเร็จเรียบร้อย'));
 
                 // Show results
                 this.app.preview.setResult(markdown, ragChunks, useRag, result);
@@ -147,9 +152,9 @@ class ConversionManager {
             }
 
         } catch (error) {
-            this.statusText.textContent = 'เกิดข้อผิดพลาด';
+            this.statusText.textContent = window.t ? window.t('toast_convert_failed') : 'เกิดข้อผิดพลาด';
             this.log(`❌ Error: ${error.message}`);
-            showToast(`เกิดข้อผิดพลาด: ${error.message}`, 'error');
+            showToast(`${window.t ? window.t('toast_convert_failed') : 'เกิดข้อผิดพลาด'}: ${error.message}`, 'error');
         } finally {
             this.btnStart.disabled = false;
         }
@@ -185,9 +190,8 @@ class ConversionManager {
     }
 
     log(msg) {
-        const time = new Date().toLocaleTimeString('th-TH');
+        const time = new Date().toLocaleTimeString();
         this.logOutput.textContent += `[${time}] ${msg}\n`;
         this.logOutput.scrollTop = this.logOutput.scrollHeight;
     }
 }
-
