@@ -13,10 +13,23 @@ from .routes import health, convert, llm
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger(__name__)
 
-# Resolve paths
-BACKEND_DIR = Path(__file__).resolve().parent.parent
-PROJECT_DIR = BACKEND_DIR.parent
-FRONTEND_DIR = PROJECT_DIR / "frontend"
+# Resolve frontend directory (supports Docker /app/frontend and local dev ../../frontend)
+def get_frontend_dir() -> Path:
+    env_path = os.environ.get("FRONTEND_DIR")
+    if env_path and Path(env_path).is_dir():
+        return Path(env_path)
+
+    current_dir = Path(__file__).resolve().parent  # app directory
+    # Docker container: /app/app/main.py -> parent is /app -> /app/frontend
+    # Local dev: backend/app/main.py -> parent.parent is root -> root/frontend
+    for parent in (current_dir.parent, current_dir.parent.parent):
+        candidate = parent / "frontend"
+        if candidate.is_dir():
+            return candidate
+
+    return current_dir.parent / "frontend"
+
+FRONTEND_DIR = get_frontend_dir()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -55,14 +68,13 @@ app.include_router(llm.router)
 
 # Mount frontend static files
 if FRONTEND_DIR.exists():
-    app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
-
-@app.get("/")
-async def root():
-    """Redirect to frontend or API health check."""
-    if FRONTEND_DIR.exists():
-        return FileResponse(str(FRONTEND_DIR / "index.html"))
-    return RedirectResponse(url="/api/health")
+    app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
+    app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
+else:
+    @app.get("/")
+    async def root():
+        """Redirect to API health check if frontend is not found."""
+        return RedirectResponse(url="/api/health")
 
 if __name__ == "__main__":
     import uvicorn
