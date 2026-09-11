@@ -8,7 +8,10 @@ class FileUploader {
         
         this.files = [];
         this.maxSize = 100 * 1024 * 1024; // 100MB
-        this.allowedTypes = ['.pdf', '.docx', '.doc', '.pptx', '.ppt', '.xlsx', '.xls'];
+        this.allowedTypes = [
+            '.pdf', '.docx', '.doc', '.pptx', '.ppt', '.xlsx', '.xls',
+            '.png', '.jpg', '.jpeg', '.webp', '.tiff', '.tif', '.bmp'
+        ];
 
         this.initEvents();
     }
@@ -53,8 +56,12 @@ class FileUploader {
                 return;
             }
             
-            const ext = '.' + getFileExtension(file.name);
-            if (!this.allowedTypes.includes(ext)) {
+            const ext = ('.' + getFileExtension(file.name)).toLowerCase();
+            const isImage = (file.type && file.type.startsWith('image/')) || 
+                            ['.png', '.jpg', '.jpeg', '.webp', '.tiff', '.tif', '.bmp', '.gif'].includes(ext);
+            const isAllowed = isImage || this.allowedTypes.includes(ext);
+
+            if (!isAllowed) {
                 const msg = window.t ? `${window.t('toast_file_not_supported')} ${ext}` : `ไม่รองรับประเภทไฟล์ ${ext}`;
                 showToast(msg, 'error');
                 return;

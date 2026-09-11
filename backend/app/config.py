@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     OUTPUT_DIR: str = Field(default="./outputs")
     UPLOAD_DIR: str = Field(default="./uploads")
     SYSTEM_PROMPT: str = Field(default="")
+    OCR_ENABLED: bool = Field(default=True)
+    OCR_FORCE_FULL_PAGE: bool = Field(default=False)
+    OCR_LANGUAGES: str = Field(default="tha,eng")
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 

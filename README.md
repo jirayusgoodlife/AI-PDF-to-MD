@@ -44,7 +44,8 @@
 ## ✨ คุณสมบัติเด่น / Key Features
 
 - 🎨 **Modern Dark Slate & Electric Blue UI**: ดีไซน์กระจกโปร่งแสง (Glassmorphism) รองรับ 2 ภาษา (🇹🇭 TH / 🇬🇧 EN) สลับได้ทันที
-- 📄 **Multi-Format Document Parsing**: รองรับ PDF, Word (.docx), PowerPoint (.pptx), และ Excel (.xlsx) สูงสุด 100MB
+- 📄 **Multi-Format & Scanned Image Support**: รองรับ PDF, Word (.docx), PowerPoint (.pptx), Excel (.xlsx) รวมถึงไฟล์รูปภาพสแกน/ถ่ายเอกสาร (.png, .jpg, .jpeg, .webp, .tiff, .bmp) สูงสุด 100MB
+- 🔍 **Scanned PDF & Photocopy OCR (Thai + English)**: สกัดข้อความจาก PDF ที่เป็นภาพสแกนหรือเอกสารสำเนาถ่ายเอกสารได้อย่างแม่นยำด้วย Tesseract OCR (`tha` + `eng`) พร้อมระบบ Auto-detect Scanned PDF และจัดระเบียบสระ/วรรณยุกต์/ช่องว่างภาษาไทย
 - 🔧 **Dual Conversion Engines**:
   - **Docling (IBM)** — รองรับทุกประเภทเอกสาร, OCR ในตัว, ดึงตารางและโครงสร้างได้แม่นยำสูง
   - **Marker (Datalab)** — ผู้เชี่ยวชาญเฉพาะทางสำหรับไฟล์ PDF ความเร็วสูง

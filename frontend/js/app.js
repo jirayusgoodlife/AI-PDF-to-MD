@@ -47,21 +47,23 @@ class App {
             }
         };
 
-        const toggleLlm = document.getElementById('toggle-llm');
-        const toggleRag = document.getElementById('toggle-rag');
+        const toggles = [
+            { toggleId: 'toggle-ocr', badgeId: 'badge-ocr' },
+            { toggleId: 'toggle-force-ocr', badgeId: 'badge-force-ocr' },
+            { toggleId: 'toggle-llm', badgeId: 'badge-llm' },
+            { toggleId: 'toggle-rag', badgeId: 'badge-rag' }
+        ];
 
-        if (toggleLlm) {
-            toggleLlm.addEventListener('change', () => updateBadge('toggle-llm', 'badge-llm'));
-            updateBadge('toggle-llm', 'badge-llm');
-        }
-        if (toggleRag) {
-            toggleRag.addEventListener('change', () => updateBadge('toggle-rag', 'badge-rag'));
-            updateBadge('toggle-rag', 'badge-rag');
-        }
+        toggles.forEach(({ toggleId, badgeId }) => {
+            const el = document.getElementById(toggleId);
+            if (el) {
+                el.addEventListener('change', () => updateBadge(toggleId, badgeId));
+                updateBadge(toggleId, badgeId);
+            }
+        });
 
         document.addEventListener('lang-changed', () => {
-            updateBadge('toggle-llm', 'badge-llm');
-            updateBadge('toggle-rag', 'badge-rag');
+            toggles.forEach(({ toggleId, badgeId }) => updateBadge(toggleId, badgeId));
         });
     }
 

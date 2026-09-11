@@ -40,14 +40,21 @@ Test and explore all API endpoints directly in your browser or via the API Docs 
    - Built-in bilingual language switcher (🇹🇭 TH / 🇬🇧 EN) in the navigation bar.
    - Real-time LLM connection status badge with auto-sync.
 
-2. **📄 Broad Document Format Support**
-   - PDF, Word (`.docx`), PowerPoint (`.pptx`), and Excel (`.xlsx`) up to 100MB.
+2. **📄 Broad Document & Scanned Image Format Support**
+   - PDF, Word (`.docx`), PowerPoint (`.pptx`), and Excel (`.xlsx`).
+   - Direct scanned images and document photos (`.png`, `.jpg`, `.jpeg`, `.webp`, `.tiff`, `.bmp`) up to 100MB.
 
 3. **🔧 Dual Conversion Engines**
    - **Docling (IBM)**: Full document format parsing, OCR, table extraction, and deep layout analysis.
    - **Marker (Datalab)**: High-speed, specialized extraction engine for PDF files.
 
-4. **🧹 AI Thai Text Correction & RAG Cleansing Pipeline**
+4. **🔍 Scanned PDF, Photocopy & Image OCR Engine (Thai & Multilingual)**
+   - **Full OCR Pipeline**: Robust text extraction from scanned PDFs, photocopies, and document photos using Tesseract (`tha` + `eng`).
+   - **Automatic Scanned Document Detection**: Automatically detects zero-text/scanned PDFs and switches to full-page OCR.
+   - **Thai Spacing & Syllable Normalization**: Automatically stitches spaced-out Thai characters from bounding boxes into natural Thai text.
+   - **UI OCR Toggles**: Seamlessly toggle OCR or force full-page OCR for degraded scans right from the web interface.
+
+5. **🧹 AI Thai Text Correction & RAG Cleansing Pipeline**
    - **Removes Headers, Footers & Page Numbers**: Filters out repeated document headers and page indicators (e.g., *"Page 1 of 10"*, *"หน้า 1 จาก 10"*), eliminating vector embedding noise.
    - **Cleans Dot Leaders & Form Fill Lines**: Strips lines like `..........`, `------------`, `_ _ _ _ _` from tables of contents and blanks.
    - **Normalizes Abnormal Spacing**: Resolves letter/word spacing scattered by full justification (e.g. `ก า ร ท ด ส อ บ` → `การทดสอบ`).

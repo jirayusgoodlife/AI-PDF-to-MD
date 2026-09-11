@@ -21,5 +21,8 @@ services:
       - LLM_ENABLED=true
       - DEFAULT_ENGINE=docling
       - MAX_FILE_SIZE_MB=100
+      - OCR_ENABLED=${OCR_ENABLED:-true}
+      - OCR_FORCE_FULL_PAGE=${OCR_FORCE_FULL_PAGE:-false}
+      - OCR_LANGUAGES=${OCR_LANGUAGES:-tha,eng}
     extra_hosts:
       - "host.docker.internal:host-gateway"

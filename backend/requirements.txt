@@ -15,3 +15,4 @@ openai>=1.40.0
 
 # Document Conversion Engines
 docling>=2.31.0
+pythainlp>=5.0.0

@@ -27,6 +27,8 @@ def get_task_status(task_id: str) -> Optional[ConversionStatus]:
 async def convert_document(
     file: UploadFile = File(...),
     engine: str = Form(settings.DEFAULT_ENGINE),
+    ocr_enabled: bool = Form(settings.OCR_ENABLED),
+    force_ocr: bool = Form(settings.OCR_FORCE_FULL_PAGE),
     llm_enabled: bool = Form(False),
     rag_mode: bool = Form(False),
     chunk_size: int = Form(4000),
@@ -67,7 +69,8 @@ async def convert_document(
         conversion_tasks[task_id].progress = 30
         conversion_tasks[task_id].current_step = f"Converting with {engine}"
         
-        converter = get_converter(engine, ext)
+        langs = [l.strip() for l in settings.OCR_LANGUAGES.split(",") if l.strip()]
+        converter = get_converter(engine, ext, ocr_enabled=ocr_enabled, force_ocr=force_ocr, ocr_lang=langs)
         markdown_content = await converter.convert(file_path, settings.OUTPUT_DIR)
         
         # Post processing & LLM

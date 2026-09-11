@@ -16,6 +16,7 @@ RUN apt-get update && \
         poppler-utils \
         tesseract-ocr \
         tesseract-ocr-tha \
+        fonts-thai-tlwg \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

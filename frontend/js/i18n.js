@@ -11,7 +11,7 @@ const translations = {
         
         // Upload Section
         drop_title: "ลากไฟล์มาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์",
-        drop_desc: "รองรับ PDF, Word, PowerPoint, Excel (สูงสุด 100MB)",
+        drop_desc: "รองรับ PDF, Word, PowerPoint, Excel, ภาพสแกน (PNG, JPG, TIFF) สูงสุด 100MB",
         file_list_title: "รายการไฟล์ที่เลือก",
         add_more_files: "+ เพิ่มไฟล์",
         
@@ -22,6 +22,8 @@ const translations = {
         docling_desc: "รองรับทุกไฟล์ แม่นยำสูง",
         marker_title: "Marker",
         marker_desc: "สำหรับ PDF เท่านั้น",
+        toggle_ocr_label: "OCR เอกสารสแกน / รูปถ่าย (ไทย + อังกฤษ)",
+        toggle_force_ocr_label: "บังคับ OCR ทั้งหน้า (สำหรับสำเนาถ่ายเอกสาร / สแกนล้วน)",
         toggle_llm_label: "ใช้ LLM แก้ไขภาษาไทย",
         toggle_rag_label: "แบ่ง Chunks สำหรับ RAG",
         badge_on: "เปิด",
@@ -91,7 +93,7 @@ const translations = {
         
         // Upload Section
         drop_title: "Drag & drop files here, or click to browse",
-        drop_desc: "Supports PDF, Word, PowerPoint, Excel (Max 100MB)",
+        drop_desc: "Supports PDF, Word, PowerPoint, Excel, Scanned Images (PNG, JPG, TIFF) Max 100MB",
         file_list_title: "Selected Files",
         add_more_files: "+ Add More Files",
         
@@ -102,6 +104,8 @@ const translations = {
         docling_desc: "All document formats, high accuracy",
         marker_title: "Marker",
         marker_desc: "PDF documents only",
+        toggle_ocr_label: "OCR Scanned PDFs / Photos (Thai + English)",
+        toggle_force_ocr_label: "Force Full-Page OCR (for scanned photocopies)",
         toggle_llm_label: "Enhance Thai Text with LLM",
         toggle_rag_label: "Split Chunks for RAG",
         badge_on: "ON",

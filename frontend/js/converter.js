@@ -30,6 +30,8 @@ class ConversionManager {
         }
 
         const engine = document.querySelector('input[name="engine"]:checked').value;
+        const useOcr = document.getElementById('toggle-ocr') ? document.getElementById('toggle-ocr').checked : true;
+        const forceOcr = document.getElementById('toggle-force-ocr') ? document.getElementById('toggle-force-ocr').checked : false;
         const useLlm = document.getElementById('toggle-llm').checked;
         const useRag = document.getElementById('toggle-rag').checked;
 
@@ -53,6 +55,8 @@ class ConversionManager {
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('engine', engine);
+                formData.append('ocr_enabled', useOcr.toString());
+                formData.append('force_ocr', forceOcr.toString());
                 formData.append('llm_enabled', useLlm.toString());
                 formData.append('rag_mode', useRag.toString());
                 if (useLlm && llmSettings.systemPrompt) {

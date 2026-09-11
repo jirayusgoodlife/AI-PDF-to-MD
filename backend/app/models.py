@@ -3,6 +3,8 @@ from typing import Optional, List
 
 class ConversionRequest(BaseModel):
     engine: str = "docling"
+    ocr_enabled: bool = True
+    force_ocr: bool = False
     llm_enabled: bool = False
     rag_mode: bool = False
     chunk_size: int = 4000

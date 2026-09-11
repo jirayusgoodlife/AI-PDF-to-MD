@@ -8,5 +8,9 @@ async def health_check():
         "status": "ok",
         "version": "1.0.2",
         "supported_engines": ["docling", "marker"],
-        "supported_formats": [".pdf", ".docx", ".pptx", ".xlsx", ".html"]
+        "supported_formats": [
+            ".pdf", ".docx", ".pptx", ".xlsx", ".html",
+            ".png", ".jpg", ".jpeg", ".webp", ".tiff", ".bmp"
+        ]
     }
+

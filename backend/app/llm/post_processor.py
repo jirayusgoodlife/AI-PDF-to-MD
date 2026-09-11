@@ -47,11 +47,46 @@ class PostProcessor:
         text = re.sub(r'(?<=[\u0E00-\u0E7F])\s{2,}(?=[\u0E00-\u0E7F])', ' ', text)
         return text
 
+    def _clean_thai_ocr_spacing(self, text: str) -> str:
+        """Fixes OCR spacing artifacts in Thai text caused by character-level or syllable-level bounding boxes."""
+        # 1. Attach upper/lower vowels and tones to base consonant
+        text = re.sub(r'([ก-๙])\s+([\u0E30-\u0E3A\u0E47-\u0E4E])', r'\1\2', text)
+        text = re.sub(r'([\u0E30-\u0E3A\u0E47-\u0E4E])\s+([ก-๙])', r'\1\2', text)
+        text = re.sub(r'([\u0E40-\u0E44])\s+([ก-๙])', r'\1\2', text)
+        text = re.sub(r'([ก-๙])\s+([\u0E30-\u0E33\u0E45])', r'\1\2', text)
+
+        # 2. Process line by line to preserve markdown formatting and code blocks
+        lines = text.split("\n")
+        cleaned_lines = []
+        in_code_block = False
+
+        for line in lines:
+            if line.strip().startswith("```"):
+                in_code_block = not in_code_block
+                cleaned_lines.append(line)
+                continue
+
+            if in_code_block:
+                cleaned_lines.append(line)
+                continue
+
+            # If line contains Thai characters, collapse single spaces between Thai letters
+            if re.search(r'[\u0E00-\u0E7F]', line):
+                line = re.sub(r'(?<=[\u0E01-\u0E5B])\s(?=[\u0E01-\u0E5B])', '', line)
+
+            cleaned_lines.append(line)
+
+        res = "\n".join(cleaned_lines)
+        res = re.sub(r'([ก-๙])\s+([\u0E30-\u0E3A\u0E47-\u0E4E])', r'\1\2', res)
+        res = re.sub(r'([\u0E40-\u0E44])\s+([ก-๙])', r'\1\2', res)
+        return res
+
     def _fix_markdown_structure(self, text: str) -> str:
         return text
 
     async def process(self, markdown: str, llm_enabled: bool, custom_prompt: Optional[str] = None) -> str:
-        processed = self._clean_rag_artifacts(markdown)
+        processed = self._clean_thai_ocr_spacing(markdown)
+        processed = self._clean_rag_artifacts(processed)
         processed = self._clean_whitespace(processed)
         processed = self._fix_markdown_structure(processed)
         
@@ -60,7 +95,9 @@ class PostProcessor:
             prompt = custom_prompt or settings.SYSTEM_PROMPT or THAI_CORRECTION_SYSTEM_PROMPT
             corrector = ThaiCorrector(self.llm_client, system_prompt=prompt)
             processed = await corrector.correct(processed)
+            processed = self._clean_thai_ocr_spacing(processed)
             processed = self._clean_rag_artifacts(processed)
             processed = self._clean_whitespace(processed)
             
         return processed
+

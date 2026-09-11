@@ -22,6 +22,9 @@ services:
       - LLM_ENABLED=${LLM_ENABLED}
       - DEFAULT_ENGINE=${DEFAULT_ENGINE}
       - MAX_FILE_SIZE_MB=${MAX_FILE_SIZE_MB}
+      - OCR_ENABLED=${OCR_ENABLED:-true}
+      - OCR_FORCE_FULL_PAGE=${OCR_FORCE_FULL_PAGE:-false}
+      - OCR_LANGUAGES=${OCR_LANGUAGES:-tha,eng}
     # depends_on:
     #   - ollama
     extra_hosts:
